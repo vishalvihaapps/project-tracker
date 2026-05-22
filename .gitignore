@@ -16,6 +16,12 @@ dist-ssr
 *.log
 npm-debug.log*
 
+# TypeScript build cache
+*.tsbuildinfo
+
+# Vite cache
+.vite/
+
 # Editor
 .vscode/*
 !.vscode/extensions.json
