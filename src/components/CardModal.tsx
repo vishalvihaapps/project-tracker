@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import Modal from './Modal'
+import { TrashIcon } from './Icon'
 import { COLUMNS } from '../types/database'
 import type { Card, CardStatus } from '../types/database'
 
@@ -78,12 +79,12 @@ export default function CardModal({
 
   return (
     <Modal
-      title={isEdit ? 'Edit card' : `Add card to ${columnLabel}`}
+      title={isEdit ? 'Edit card' : `Add card · ${columnLabel}`}
       onClose={onClose}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">
+          <label className="mb-1.5 block text-xs font-medium text-muted">
             Title
           </label>
           <input
@@ -92,25 +93,25 @@ export default function CardModal({
             required
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+            className="field"
             placeholder="What needs doing?"
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">
-            Description <span className="text-slate-400">(optional)</span>
+          <label className="mb-1.5 block text-xs font-medium text-muted">
+            Description <span className="text-dim">(optional)</span>
           </label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={4}
-            className="w-full resize-none rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+            className="field resize-none"
             placeholder="Add more detail…"
           />
         </div>
 
         {error && (
-          <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+          <p className="rounded-lg border border-danger/20 bg-danger/10 px-3 py-2 text-sm text-danger">
             {error}
           </p>
         )}
@@ -121,8 +122,9 @@ export default function CardModal({
               type="button"
               onClick={handleDelete}
               disabled={busy}
-              className="rounded-lg px-3 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 disabled:opacity-60"
+              className="btn btn-danger"
             >
+              <TrashIcon size={15} />
               Delete
             </button>
           ) : (
@@ -132,16 +134,12 @@ export default function CardModal({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100"
+              className="btn btn-ghost"
             >
               Cancel
             </button>
-            <button
-              type="submit"
-              disabled={busy}
-              className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:opacity-60"
-            >
-              {busy ? 'Saving…' : isEdit ? 'Save' : 'Add card'}
+            <button type="submit" disabled={busy} className="btn btn-primary">
+              {busy ? 'Saving…' : isEdit ? 'Save changes' : 'Add card'}
             </button>
           </div>
         </div>

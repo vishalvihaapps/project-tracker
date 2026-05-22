@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { BoardIcon } from '../components/Icon'
 
 export default function LoginPage() {
   const { session, loading, signIn, signUp } = useAuth()
@@ -43,72 +44,81 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex h-full items-center justify-center bg-slate-100 p-4">
-      <div className="w-full max-w-sm rounded-xl bg-white p-8 shadow-md">
-        <h1 className="mb-1 text-2xl font-bold text-slate-800">
-          Project Tracker
-        </h1>
-        <p className="mb-6 text-sm text-slate-500">
+    <div className="flex h-full items-center justify-center p-4">
+      <div className="w-full max-w-sm">
+        <div className="mb-6 flex flex-col items-center text-center">
+          <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent text-white">
+            <BoardIcon size={24} />
+          </span>
+          <h1 className="mt-4 font-display text-2xl font-bold">
+            Project Tracker
+          </h1>
+          <p className="mt-1 text-sm text-muted">
+            {mode === 'signin'
+              ? 'Sign in to your boards.'
+              : 'Create an account to get started.'}
+          </p>
+        </div>
+
+        <div className="kb-panel" style={{ maxWidth: 'none' }}>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="mb-1.5 block text-xs font-medium text-muted">
+                Email
+              </label>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="field"
+                placeholder="you@example.com"
+              />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-xs font-medium text-muted">
+                Password
+              </label>
+              <input
+                type="password"
+                required
+                minLength={6}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="field"
+                placeholder="At least 6 characters"
+              />
+            </div>
+
+            {error && (
+              <p className="rounded-lg border border-danger/20 bg-danger/10 px-3 py-2 text-sm text-danger">
+                {error}
+              </p>
+            )}
+            {info && (
+              <p className="rounded-lg border border-ok/20 bg-ok/10 px-3 py-2 text-sm text-ok">
+                {info}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={submitting}
+              className="btn btn-primary w-full"
+            >
+              {submitting
+                ? 'Please wait…'
+                : mode === 'signin'
+                  ? 'Sign in'
+                  : 'Create account'}
+            </button>
+          </form>
+        </div>
+
+        <p className="mt-6 text-center text-sm text-muted">
           {mode === 'signin'
-            ? 'Sign in to your boards.'
-            : 'Create an account to get started.'}
-        </p>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">
-              Email
-            </label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-              placeholder="you@example.com"
-            />
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">
-              Password
-            </label>
-            <input
-              type="password"
-              required
-              minLength={6}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-              placeholder="At least 6 characters"
-            />
-          </div>
-
-          {error && (
-            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
-              {error}
-            </p>
-          )}
-          {info && (
-            <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
-              {info}
-            </p>
-          )}
-
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {submitting
-              ? 'Please wait…'
-              : mode === 'signin'
-                ? 'Sign in'
-                : 'Create account'}
-          </button>
-        </form>
-
-        <p className="mt-6 text-center text-sm text-slate-500">
-          {mode === 'signin' ? "Don't have an account?" : 'Already registered?'}{' '}
+            ? "Don't have an account?"
+            : 'Already registered?'}{' '}
           <button
             type="button"
             onClick={() => {
@@ -116,7 +126,7 @@ export default function LoginPage() {
               setError(null)
               setInfo(null)
             }}
-            className="font-semibold text-indigo-600 hover:underline"
+            className="font-semibold text-accent hover:underline"
           >
             {mode === 'signin' ? 'Sign up' : 'Sign in'}
           </button>

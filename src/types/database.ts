@@ -26,7 +26,7 @@ export interface Card {
 // This single source of truth drives the board layout.
 export const COLUMNS: { id: CardStatus; label: string }[] = [
   { id: 'todo', label: 'Todo' },
-  { id: 'in_progress', label: 'InProgress' },
+  { id: 'in_progress', label: 'In Progress' },
   { id: 'complete', label: 'Complete' },
   { id: 'archive', label: 'Archive' },
 ]

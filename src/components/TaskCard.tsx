@@ -1,11 +1,22 @@
 import { useRef } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import type { Card } from '../types/database'
+import type { Card, CardStatus } from '../types/database'
+import { CalendarIcon } from './Icon'
+
+// Strip color reflects the card's real status (the same data as its column).
+const STATUS_COLOR: Record<CardStatus, string> = {
+  todo: '#60a5fa',
+  in_progress: '#7c6af7',
+  complete: '#34d399',
+  archive: '#6b6877',
+}
 
 interface TaskCardProps {
   card: Card
   onClick?: () => void
+  /** Position in the column — drives the stagger animation delay. */
+  index?: number
   /** Renders the static preview shown inside the DragOverlay. */
   overlay?: boolean
 }
@@ -13,6 +24,7 @@ interface TaskCardProps {
 export default function TaskCard({
   card,
   onClick,
+  index = 0,
   overlay = false,
 }: TaskCardProps) {
   const downAt = useRef<{ x: number; y: number } | null>(null)
@@ -21,8 +33,14 @@ export default function TaskCard({
 
   if (overlay) {
     return (
-      <div className="rotate-2 rounded-lg border border-indigo-300 bg-white p-3 shadow-lg">
-        <CardBody card={card} />
+      <div className="kb-card kb-card--overlay">
+        <span
+          className="kb-strip"
+          style={{ background: STATUS_COLOR[card.status] }}
+        />
+        <div className="kb-card__content">
+          <CardBody card={card} />
+        </div>
       </div>
     )
   }
@@ -30,6 +48,7 @@ export default function TaskCard({
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+    animationDelay: `${index * 80}ms`,
   }
 
   return (
@@ -42,6 +61,11 @@ export default function TaskCard({
         downAt.current = { x: e.clientX, y: e.clientY }
         listeners?.onPointerDown?.(e)
       }}
+      onMouseMove={(e) => {
+        const r = e.currentTarget.getBoundingClientRect()
+        e.currentTarget.style.setProperty('--mx', `${e.clientX - r.left}px`)
+        e.currentTarget.style.setProperty('--my', `${e.clientY - r.top}px`)
+      }}
       onClick={(e) => {
         // Distinguish a click from the tail of a drag gesture.
         const start = downAt.current
@@ -53,11 +77,15 @@ export default function TaskCard({
         }
         onClick?.()
       }}
-      className={`cursor-grab rounded-lg border border-slate-200 bg-white p-3 shadow-sm transition hover:border-indigo-300 ${
-        isDragging ? 'opacity-40' : ''
-      }`}
+      className={`kb-card card-enter ${isDragging ? 'opacity-40' : ''}`}
     >
-      <CardBody card={card} />
+      <span
+        className="kb-strip"
+        style={{ background: STATUS_COLOR[card.status] }}
+      />
+      <div className="kb-card__content">
+        <CardBody card={card} />
+      </div>
     </div>
   )
 }
@@ -65,12 +93,22 @@ export default function TaskCard({
 function CardBody({ card }: { card: Card }) {
   return (
     <>
-      <p className="text-sm font-medium text-slate-800">{card.title}</p>
+      <h3 className="break-words text-[14.5px] font-medium leading-snug">
+        {card.title}
+      </h3>
       {card.description && (
-        <p className="mt-1 line-clamp-2 text-xs text-slate-500">
+        <p className="mt-1.5 line-clamp-3 break-words text-xs leading-relaxed text-muted">
           {card.description}
         </p>
       )}
+      <div className="mt-3 flex items-center gap-1.5 border-t border-hair pt-2.5 text-[11px] text-dim">
+        <CalendarIcon size={13} />
+        {new Date(card.created_at).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        })}
+      </div>
     </>
   )
 }

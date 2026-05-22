@@ -3,10 +3,16 @@ import Modal from './Modal'
 
 interface NewBoardModalProps {
   onClose: () => void
-  onCreate: (name: string, description: string) => Promise<{ error: string | null }>
+  onCreate: (
+    name: string,
+    description: string,
+  ) => Promise<{ error: string | null }>
 }
 
-export default function NewBoardModal({ onClose, onCreate }: NewBoardModalProps) {
+export default function NewBoardModal({
+  onClose,
+  onCreate,
+}: NewBoardModalProps) {
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -32,7 +38,7 @@ export default function NewBoardModal({ onClose, onCreate }: NewBoardModalProps)
     <Modal title="New project board" onClose={onClose}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">
+          <label className="mb-1.5 block text-xs font-medium text-muted">
             Board name
           </label>
           <input
@@ -41,41 +47,37 @@ export default function NewBoardModal({ onClose, onCreate }: NewBoardModalProps)
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+            className="field"
             placeholder="e.g. Website redesign"
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700">
-            Description <span className="text-slate-400">(optional)</span>
+          <label className="mb-1.5 block text-xs font-medium text-muted">
+            Description <span className="text-dim">(optional)</span>
           </label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
-            className="w-full resize-none rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+            className="field resize-none"
             placeholder="What is this project about?"
           />
         </div>
 
         {error && (
-          <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+          <p className="rounded-lg border border-danger/20 bg-danger/10 px-3 py-2 text-sm text-danger">
             {error}
           </p>
         )}
 
         <div className="flex justify-end gap-2">
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100"
-          >
+          <button type="button" onClick={onClose} className="btn btn-ghost">
             Cancel
           </button>
           <button
             type="submit"
             disabled={submitting}
-            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:opacity-60"
+            className="btn btn-primary"
           >
             {submitting ? 'Creating…' : 'Create board'}
           </button>

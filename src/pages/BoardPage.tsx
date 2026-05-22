@@ -17,6 +17,7 @@ import Navbar from '../components/Navbar'
 import Column from '../components/Column'
 import TaskCard from '../components/TaskCard'
 import CardModal, { type CardModalState } from '../components/CardModal'
+import { ArrowLeftIcon } from '../components/Icon'
 import { useCards } from '../hooks/useCards'
 import { supabase } from '../lib/supabase'
 import { COLUMNS } from '../types/database'
@@ -155,32 +156,31 @@ export default function BoardPage() {
   }
 
   return (
-    <div className="flex h-full flex-col bg-slate-100">
+    <div className="flex h-full flex-col">
       <Navbar />
 
-      <div className="flex items-center gap-3 border-b border-slate-200 bg-white px-6 py-3">
-        <Link
-          to="/"
-          className="text-sm font-medium text-indigo-600 hover:underline"
-        >
-          ← All boards
+      {/* breadcrumb */}
+      <div className="flex items-center gap-3 border-b border-hair px-6 py-3.5">
+        <Link to="/" className="btn btn-ghost !px-2.5 !py-1.5 !text-[13px]">
+          <ArrowLeftIcon size={15} />
+          Boards
         </Link>
-        {boardName && (
-          <>
-            <span className="text-slate-300">/</span>
-            <h1 className="font-semibold text-slate-800">{boardName}</h1>
-          </>
-        )}
+        <span className="text-dim">/</span>
+        <h1 className="min-w-0 truncate text-lg font-bold">
+          {boardName || 'Board'}
+        </h1>
       </div>
 
       {(dragError || error) && (
-        <p className="bg-red-50 px-6 py-2 text-sm text-red-700">
+        <p className="border-b border-danger/20 bg-danger/10 px-6 py-2 text-sm text-danger">
           {dragError ?? error}
         </p>
       )}
 
       {loading ? (
-        <p className="p-6 text-slate-400">Loading board…</p>
+        <div className="flex flex-1 items-center justify-center text-sm text-muted">
+          Loading board…
+        </div>
       ) : (
         <DndContext
           sensors={sensors}
@@ -190,19 +190,22 @@ export default function BoardPage() {
           onDragEnd={handleDragEnd}
           onDragCancel={handleDragCancel}
         >
-          <div className="flex flex-1 gap-4 overflow-x-auto p-6">
-            {COLUMNS.map((col) => (
-              <Column
-                key={col.id}
-                status={col.id}
-                label={col.label}
-                cards={grouped[col.id]}
-                onAddCard={() =>
-                  setModal({ mode: 'create', status: col.id })
-                }
-                onCardClick={(card) => setModal({ mode: 'edit', card })}
-              />
-            ))}
+          <div className="min-h-0 flex-1">
+            <div className="flex h-full gap-4 overflow-x-auto px-6 py-5">
+              {COLUMNS.map((col, i) => (
+                <Column
+                  key={col.id}
+                  index={i}
+                  status={col.id}
+                  label={col.label}
+                  cards={grouped[col.id]}
+                  onAddCard={() =>
+                    setModal({ mode: 'create', status: col.id })
+                  }
+                  onCardClick={(card) => setModal({ mode: 'edit', card })}
+                />
+              ))}
+            </div>
           </div>
 
           <DragOverlay>

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import Navbar from '../components/Navbar'
 import BoardTile from '../components/BoardTile'
 import NewBoardModal from '../components/NewBoardModal'
+import { BoardIcon, PlusIcon } from '../components/Icon'
 import { useBoards } from '../hooks/useBoards'
 
 export default function DashboardPage() {
@@ -9,46 +10,60 @@ export default function DashboardPage() {
   const [showNewBoard, setShowNewBoard] = useState(false)
 
   return (
-    <div className="flex h-full flex-col bg-slate-100">
+    <div className="flex h-full flex-col">
       <Navbar />
 
-      <main className="mx-auto w-full max-w-6xl flex-1 p-6">
-        <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-slate-800">Your boards</h1>
+      <main className="mx-auto w-full max-w-6xl flex-1 overflow-y-auto p-8">
+        <div className="mb-7 flex items-end justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold">Your boards</h1>
+            <p className="mt-1 text-sm text-muted">
+              Organize projects and track every task.
+            </p>
+          </div>
           <button
             type="button"
             onClick={() => setShowNewBoard(true)}
-            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700"
+            className="btn btn-primary"
           >
-            + New board
+            <PlusIcon size={16} />
+            New board
           </button>
         </div>
 
         {error && (
-          <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+          <p className="mb-4 rounded-lg border border-danger/20 bg-danger/10 px-3 py-2 text-sm text-danger">
             {error}
           </p>
         )}
 
         {loading ? (
-          <p className="text-slate-400">Loading boards…</p>
+          <p className="text-sm text-muted">Loading boards…</p>
         ) : boards.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
-            <p className="text-slate-500">
+          <div className="flex flex-col items-center rounded-2xl border border-dashed border-hair bg-surface p-14 text-center">
+            <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-accent/15 text-accent">
+              <BoardIcon size={26} />
+            </span>
+            <p className="mt-4 text-sm text-muted">
               No boards yet. Create your first project board to get started.
             </p>
             <button
               type="button"
               onClick={() => setShowNewBoard(true)}
-              className="mt-4 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700"
+              className="btn btn-primary mt-5"
             >
-              + New board
+              <PlusIcon size={16} />
+              New board
             </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {boards.map((board) => (
-              <BoardTile key={board.id} board={board} onDelete={deleteBoard} />
+              <BoardTile
+                key={board.id}
+                board={board}
+                onDelete={deleteBoard}
+              />
             ))}
           </div>
         )}
