@@ -1,0 +1,23 @@
+# Personal, non-committed Claude Code overrides
+.claude/settings.local.json
+
+# Dependencies
+node_modules
+
+# Build output
+dist
+dist-ssr
+
+# Environment variables (contains Supabase keys)
+.env.local
+.env*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
