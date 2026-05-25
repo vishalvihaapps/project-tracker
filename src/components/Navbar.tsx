@@ -44,7 +44,7 @@ export default function Navbar() {
         <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-white">
           <BoardIcon size={17} />
         </span>
-        <span className="font-display text-[15px] font-bold">
+        <span className="text-[15px] font-bold tracking-tight">
           Project Tracker
         </span>
       </Link>
