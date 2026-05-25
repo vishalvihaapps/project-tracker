@@ -53,7 +53,7 @@ export default function TaskCard({
   }
 
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform: CSS.Translate.toString(transform),
     transition,
     animationDelay: `${index * 80}ms`,
   }
