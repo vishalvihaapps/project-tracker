@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react'
 import Modal from './Modal'
 import { TrashIcon } from './Icon'
 import { COLUMNS } from '../types/database'
-import type { Card, CardStatus } from '../types/database'
+import type { Card, CardPriority, CardStatus } from '../types/database'
 
 export type CardModalState =
   | { mode: 'create'; status: CardStatus }
@@ -15,13 +15,25 @@ interface CardModalProps {
     status: CardStatus,
     title: string,
     description: string,
+    priority: CardPriority | null,
   ) => Promise<{ error: string | null }>
   onUpdate: (
     id: string,
-    fields: { title: string; description: string | null },
+    fields: {
+      title: string
+      description: string | null
+      priority: CardPriority | null
+    },
   ) => Promise<{ error: string | null }>
   onDelete: (id: string) => Promise<{ error: string | null }>
 }
+
+const PRIORITY_OPTIONS: { value: CardPriority | ''; label: string }[] = [
+  { value: '', label: 'None' },
+  { value: 'p1', label: 'P1 — Highest' },
+  { value: 'p2', label: 'P2 — Medium' },
+  { value: 'p3', label: 'P3 — Lowest' },
+]
 
 export default function CardModal({
   state,
@@ -34,6 +46,9 @@ export default function CardModal({
   const [title, setTitle] = useState(isEdit ? state.card.title : '')
   const [description, setDescription] = useState(
     isEdit ? (state.card.description ?? '') : '',
+  )
+  const [priority, setPriority] = useState<CardPriority | ''>(
+    isEdit ? (state.card.priority ?? '') : '',
   )
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
@@ -48,12 +63,14 @@ export default function CardModal({
     setBusy(true)
     setError(null)
 
+    const priorityValue: CardPriority | null = priority === '' ? null : priority
     const result = isEdit
       ? await onUpdate(state.card.id, {
           title: title.trim(),
           description: description.trim() || null,
+          priority: priorityValue,
         })
-      : await onCreate(state.status, title.trim(), description)
+      : await onCreate(state.status, title.trim(), description, priorityValue)
 
     setBusy(false)
     if (result.error) {
@@ -108,6 +125,22 @@ export default function CardModal({
             className="field resize-none"
             placeholder="Add more detail…"
           />
+        </div>
+        <div>
+          <label className="mb-1.5 block text-xs font-medium text-muted">
+            Priority
+          </label>
+          <select
+            value={priority}
+            onChange={(e) => setPriority(e.target.value as CardPriority | '')}
+            className="field"
+          >
+            {PRIORITY_OPTIONS.map((opt) => (
+              <option key={opt.value || 'none'} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
         </div>
 
         {error && (

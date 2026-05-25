@@ -6,6 +6,9 @@
 -- Fixed kanban columns, modeled as an enum on each card.
 create type card_status as enum ('todo', 'in_progress', 'complete', 'archive');
 
+-- Card priority. P1 = highest, P3 = lowest. Null means no priority set.
+create type card_priority as enum ('p1', 'p2', 'p3');
+
 -- ------------------------------------------------------------
 -- Projects / boards
 -- ------------------------------------------------------------
@@ -27,12 +30,14 @@ create table cards (
   title       text not null,
   description text,
   status      card_status not null default 'todo',
+  priority    card_priority,                     -- nullable: optional
   position    integer not null default 0,        -- order within a column
   created_at  timestamptz not null default now(),
   updated_at  timestamptz not null default now()
 );
 
 create index cards_board_status_idx on cards (board_id, status, position);
+create index cards_board_priority_idx on cards (board_id, priority);
 create index boards_owner_idx on boards (owner_id);
 
 -- ------------------------------------------------------------
@@ -70,3 +75,19 @@ create trigger cards_updated_at
 -- ------------------------------------------------------------
 alter publication supabase_realtime add table cards;
 alter publication supabase_realtime add table boards;
+
+-- ============================================================
+-- Migration: priority field (run on existing databases)
+-- ============================================================
+-- If your database was created before the priority feature, run this
+-- block in the SQL editor. It is idempotent — safe to run more than once.
+--
+-- do $$
+-- begin
+--   if not exists (select 1 from pg_type where typname = 'card_priority') then
+--     create type card_priority as enum ('p1', 'p2', 'p3');
+--   end if;
+-- end$$;
+--
+-- alter table cards add column if not exists priority card_priority;
+-- create index if not exists cards_board_priority_idx on cards (board_id, priority);

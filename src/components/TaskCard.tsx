@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import type { Card, CardStatus } from '../types/database'
+import type { Card, CardPriority, CardStatus } from '../types/database'
 import { CalendarIcon } from './Icon'
 
 // Strip color reflects the card's real status (the same data as its column).
@@ -10,6 +10,13 @@ const STATUS_COLOR: Record<CardStatus, string> = {
   in_progress: '#7c6af7',
   complete: '#34d399',
   archive: '#6b6877',
+}
+
+// Badge style per priority. P1 = red (urgent), P2 = amber, P3 = blue.
+const PRIORITY_STYLE: Record<CardPriority, string> = {
+  p1: 'bg-red-500/15 text-red-400 border border-red-500/30',
+  p2: 'bg-amber-500/15 text-amber-400 border border-amber-500/30',
+  p3: 'bg-blue-500/15 text-blue-400 border border-blue-500/30',
 }
 
 interface TaskCardProps {
@@ -93,9 +100,18 @@ export default function TaskCard({
 function CardBody({ card }: { card: Card }) {
   return (
     <>
-      <h3 className="break-words text-[14.5px] font-medium leading-snug">
-        {card.title}
-      </h3>
+      <div className="flex items-start justify-between gap-2">
+        <h3 className="break-words text-[14.5px] font-medium leading-snug">
+          {card.title}
+        </h3>
+        {card.priority && (
+          <span
+            className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${PRIORITY_STYLE[card.priority]}`}
+          >
+            {card.priority}
+          </span>
+        )}
+      </div>
       {card.description && (
         <p className="mt-1.5 line-clamp-3 break-words text-xs leading-relaxed text-muted">
           {card.description}

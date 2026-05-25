@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
-import type { Card, CardStatus } from '../types/database'
+import type { Card, CardPriority, CardStatus } from '../types/database'
 
 /**
  * Loads and mutates the cards for one board. Keeps a flat `cards` array as the
@@ -69,6 +69,7 @@ export function useCards(boardId: string | undefined) {
     status: CardStatus,
     title: string,
     description: string,
+    priority: CardPriority | null,
   ) {
     if (!boardId || !user) return { error: 'Not ready.' }
     const position = cardsRef.current.filter((c) => c.status === status).length
@@ -80,6 +81,7 @@ export function useCards(boardId: string | undefined) {
         title,
         description: description.trim() || null,
         status,
+        priority,
         position,
       })
       .select()
@@ -92,7 +94,11 @@ export function useCards(boardId: string | undefined) {
 
   async function updateCard(
     id: string,
-    fields: { title?: string; description?: string | null },
+    fields: {
+      title?: string
+      description?: string | null
+      priority?: CardPriority | null
+    },
   ) {
     const { data, error: updateError } = await supabase
       .from('cards')

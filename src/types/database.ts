@@ -2,6 +2,9 @@
 
 export type CardStatus = 'todo' | 'in_progress' | 'complete' | 'archive'
 
+// P1 = highest, P3 = lowest. Null means no priority set.
+export type CardPriority = 'p1' | 'p2' | 'p3'
+
 export interface Board {
   id: string
   owner_id: string
@@ -17,6 +20,7 @@ export interface Card {
   title: string
   description: string | null
   status: CardStatus
+  priority: CardPriority | null
   position: number
   created_at: string
   updated_at: string
